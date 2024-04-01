@@ -49,9 +49,6 @@ export default function Profile() {
   const user = auth.currentUser;
   const [avatar, setAvatar] = useState(user?.photoURL);
   const [tweets, setTweets] = useState<ITweet[]>([]);
-  const [name, setName] = useState(user?.displayName ?? 'Anonymous');
-  const [edit, setEdit] = useState(false);
-
   const onAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!user) return;
@@ -89,14 +86,6 @@ export default function Profile() {
     fetchTweets();
   }, []);
 
-  const onNameChange = async () => {
-    if (!user) return;
-    if (edit) {
-      await updateProfile(user, { displayName: name });
-    }
-    setEdit(!edit);
-  };
-
   return (
     <Wrapper>
       <AvatarUpload htmlFor="avatar">
@@ -114,12 +103,7 @@ export default function Profile() {
         )}
       </AvatarUpload>
       <AvatarInput onChange={onAvatarChange} id="avatar" type="file" accept="image/*" />
-      {edit ? (
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
-      ) : (
-        <Name>{name}</Name>
-      )}
-      <button onClick={onNameChange}>{edit ? 'Save' : 'Change Name'}</button>
+      <Name>{user?.displayName ?? 'Anonymous'}</Name>
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} {...tweet} />
